@@ -1,0 +1,11 @@
+{
+  "id": "countdown",
+  "name": "Countdown",
+  "repo": "its-ash/countdown",
+  "package": "com.itsash.countdown",
+  "tagline": "Count down to birthdays, trips and big days. Days left on your home screen.",
+  "description": "Countdown keeps the dates that matter in one list, sorted by what is coming first. Each event has a title, an emoji, a color, a date and an optional time. Mark it as yearly for birthdays and anniversaries and it rolls over by itself. See the days or hours left in big numbers, a progress bar from the day you added it, and a live days, hours, minutes and seconds clock on the detail page. Dates in the past show how many days have gone by. Get a notification on the day and, if you like, a few days before. Add a small widget for one event or a larger widget with your next events. They refresh at midnight. Everything works offline and stays on your phone.",
+  "category": "Productivity",
+  "icon": "assets/icon/logo-1024.png",
+  "homepage": "https://countdown.itsash.in/"
+}

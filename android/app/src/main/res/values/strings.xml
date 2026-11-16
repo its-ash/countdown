@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="channel_events">Event reminders</string>
+    <string name="widget_small_label">Countdown</string>
+    <string name="widget_list_label">Countdown list</string>
+    <string name="widget_small_description">Days left to one event.</string>
+    <string name="widget_list_description">Your next events and the days left.</string>
+    <string name="widget_pick">Pick an event</string>
+    <string name="widget_pick_title">Pick an event</string>
+    <string name="widget_no_events">Add an event in Countdown first. Tap here to close.</string>
+    <string name="widget_empty">No events yet. Open Countdown to add one.</string>
+</resources>
