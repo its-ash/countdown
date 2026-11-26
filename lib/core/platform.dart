@@ -29,6 +29,8 @@ class ChannelPlatform implements CountdownPlatform {
       return await _channel.invokeMethod<String>('load');
     } on MissingPluginException {
       return null;
+    } on PlatformException {
+      return null;
     }
   }
 
@@ -39,6 +41,8 @@ class ChannelPlatform implements CountdownPlatform {
       await _channel.invokeMethod<void>('save', {'events': events, 'alerts': alerts});
     } on MissingPluginException {
       // Not running on Android.
+    } on PlatformException {
+      // Native save failed.
     }
   }
 
@@ -49,6 +53,8 @@ class ChannelPlatform implements CountdownPlatform {
       return await _channel.invokeMethod<bool>('notificationsGranted') ?? false;
     } on MissingPluginException {
       return true;
+    } on PlatformException {
+      return false;
     }
   }
 
@@ -59,6 +65,8 @@ class ChannelPlatform implements CountdownPlatform {
       await _channel.invokeMethod<void>('requestNotifications');
     } on MissingPluginException {
       // Not running on Android.
+    } on PlatformException {
+      // Native request failed.
     }
   }
 }

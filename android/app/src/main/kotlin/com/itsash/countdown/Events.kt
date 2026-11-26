@@ -151,10 +151,18 @@ class CountdownPrefs(context: Context) {
         get() = p.getString("alerts", null)
         set(v) = p.edit().putString("alerts", v).apply()
 
-    /** Newest alert time already handled (epoch ms), so nothing fires twice. */
+    /** Last processed wall-clock time (epoch ms), used to detect backward clock jumps. */
     var lastFired: Long
         get() = p.getLong("lastFired", 0L)
         set(v) = p.edit().putLong("lastFired", v).apply()
+
+    val hasFiredAlerts: Boolean
+        get() = p.contains("firedAlerts")
+
+    /** Keys (`at|title|body`) of alerts already shown within the retention window. */
+    var firedAlerts: Set<String>
+        get() = p.getStringSet("firedAlerts", emptySet()) ?: emptySet()
+        set(v) = p.edit().putStringSet("firedAlerts", HashSet(v)).apply()
 
     var askedNotifications: Boolean
         get() = p.getBoolean("askedNotifications", false)

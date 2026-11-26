@@ -30,7 +30,7 @@ class MainActivity : FlutterActivity() {
                     "save" -> {
                         prefs.eventsJson = call.argument<String>("events")
                         prefs.alertsJson = call.argument<String>("alerts")
-                        CountdownSync.refresh(this)
+                        CountdownSync.refresh(this, allowTolerance = false)
                         result.success(null)
                     }
                     "notificationsGranted" -> result.success(enabled())

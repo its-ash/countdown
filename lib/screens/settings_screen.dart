@@ -67,6 +67,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'Add a widget',
               subtitle: 'Touch and hold your home screen, tap Widgets, then pick Countdown. '
                   'The small one shows one event, the large one your next four.',
+              maxSubtitleLines: 4,
               icon: Icons.widgets_rounded,
             ),
           ),

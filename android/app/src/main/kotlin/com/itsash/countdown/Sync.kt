@@ -13,10 +13,10 @@ import java.time.ZoneId
 
 /** Redraws the widgets and re-plans every alarm. Called after each change and on boot / clock changes. */
 object CountdownSync {
-    fun refresh(context: Context) {
+    fun refresh(context: Context, allowTolerance: Boolean = true) {
         SmallWidget.updateAll(context)
         ListWidget.updateAll(context)
-        Alerts.process(context)
+        Alerts.process(context, allowTolerance = allowTolerance)
         scheduleMidnight(context)
     }
 
@@ -53,26 +53,41 @@ object Alerts {
     private const val STALE_MS = 12L * 60 * 60 * 1000
 
     /** Shows the alerts that are due, then arms the alarm for the next one. */
-    fun process(context: Context) {
+    fun process(context: Context, allowTolerance: Boolean = true) {
         val prefs = CountdownPrefs(context)
         val now = System.currentTimeMillis()
         val list = parse(prefs.alertsJson)
-        var watermark = maxOf(prefs.lastFired, now)
-        val last = prefs.lastFired
+        val cutoff = if (allowTolerance) now + TOLERANCE_MS else now
+        val clockBack = prefs.lastFired > now + TOLERANCE_MS
+        val legacyLast = if (clockBack || prefs.hasFiredAlerts) 0L else prefs.lastFired
+        val fired = (if (clockBack) emptySet() else prefs.firedAlerts)
+            .filterTo(mutableSetOf()) { keyTime(it) >= now - STALE_MS }
+
         for (a in list) {
-            if (a.at > last && a.at <= now + TOLERANCE_MS) {
-                if (now - a.at < STALE_MS) show(context, a)
-                watermark = maxOf(watermark, a.at)
+            if (a.at > cutoff) break
+            val k = key(a)
+            if (k in fired) continue
+            if (a.at <= legacyLast) {
+                fired.add(k)
+                continue
             }
+            if (now - a.at < STALE_MS) show(context, a)
+            fired.add(k)
         }
-        prefs.lastFired = watermark
-        val next = list.firstOrNull { it.at > watermark }
+        prefs.firedAlerts = fired
+        prefs.lastFired = now
+
+        val next = list.firstOrNull { it.at > cutoff && key(it) !in fired }
         val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val pi = CountdownSync.receiverIntent(context, AlarmReceiver.ACTION_ALERT, REQUEST_ALERT)
         if (next == null) am.cancel(pi) else am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, next.at, pi)
     }
 
     private class Alert(val at: Long, val title: String, val body: String)
+
+    private fun key(a: Alert): String = "${a.at}|${a.title}|${a.body}"
+
+    private fun keyTime(key: String): Long = key.substringBefore('|').toLongOrNull() ?: 0L
 
     private fun parse(raw: String?): List<Alert> {
         if (raw.isNullOrEmpty()) return emptyList()
